@@ -1,0 +1,27 @@
+info:
+  name: create
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: http://localhost:8080/users/
+  body:
+    type: json
+    data: |
+      {
+        "gender": "MALE",
+        "birthday": "1995-08-21T00:00:00Z",
+        "firstname": "Ali",
+        "lastname": "Ahmadi",
+        "email": "ali.ahmadi3@example.com",
+        "password_hash":"1234",
+        "active": true
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

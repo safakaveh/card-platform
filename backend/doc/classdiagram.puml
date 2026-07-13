@@ -1,0 +1,75 @@
+@startuml
+
+entity "files" as files {
+    +uuid : UUID <<PK>>
+    --
+    original_filename : VARCHAR
+    mime_type : VARCHAR
+    file_size : BIGINT
+    data : BYTEA
+    checksum : VARCHAR
+    created_at : BIGINT
+    updated_at : BIGINT
+}
+
+entity "users" as users {
+    +uuid : UUID <<PK>>
+    --
+    uuid_file : UUID <<FK>>
+    firstname : VARCHAR
+    lastname : VARCHAR
+    cellphone : VARCHAR
+    email : VARCHAR
+    active : BOOLEAN
+    password : VARCHAR
+    created_at : BIGINT
+    updated_at : BIGINT
+}
+
+entity "applications" as applications {
+    +uuid : UUID <<PK>>
+    --
+    code : VARCHAR
+    application : VARCHAR
+    title : VARCHAR
+    created_at : BIGINT
+    updated_at : BIGINT
+}
+
+entity "rules" as rules {
+    +uuid : UUID <<PK>>
+    --
+    rule_name : VARCHAR
+    description : VARCHAR
+    created_at : BIGINT
+    updated_at : BIGINT
+}
+
+entity "users_access" as users_access {
+    +uuid : UUID <<PK>>
+    --
+    uuid_user : UUID <<FK>>
+    uuid_application : UUID <<FK>>
+    uuid_rule : UUID <<FK>>
+    created_at : BIGINT
+    updated_at : BIGINT
+}
+
+entity "refresh_token_rotation" as tokens {
+    +uuid : UUID <<PK>>
+    --
+    uuid_user : UUID <<FK>>
+    refresh_token_hash : VARCHAR
+    expires_at : BIGINT
+    created_at : BIGINT
+    revoked_at : BIGINT
+    replaced_by_token : VARCHAR
+}
+
+files ||--o{ users
+users ||--o{ users_access
+applications ||--o{ users_access
+rules ||--o{ users_access
+users ||--o{ tokens
+
+@enduml

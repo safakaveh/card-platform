@@ -1,0 +1,18 @@
+info:
+  name: private
+  type: http
+  seq: 5
+
+http:
+  method: GET
+  url: http://localhost:8080/private
+  headers:
+    - name: Authorization
+      value: Bearer eyJhbGciOiJFZERTQSIsImtpZCI6Imp3dC1lZDI1NTE5OnYyIiwidHlwIjoiSldUIn0.eyJqdGkiOiJiMjUzNjI5NS1lMDBiLTQ5NzQtOGU1Zi1hNmUzNDY4M2NkYzQiLCJpc3MiOiJzdW4tdXNlci1tYW5hZ2VtZW50Iiwic3ViIjoiMjE5ZmM5YmItZGU3MC00YTQzLWFiZjItNWVhMDY2YmY5YmY0IiwiYXVkIjpbInN1bi1jbGllbnQiXSwibmJmIjoxNzgzMjcyMjI0LCJpYXQiOjE3ODMyNzIyMjksImV4cCI6MTc4MzI3MzEyOSwicnVsZXMiOlsidXNlcnM6cmVhZCIsInVzZXJzOndyaXRlIl19.Npcodlp9JiYia-7lOvJRNvvrCLDMPWYXMhCV5Q3uu1a4UgiAZom1U0f_OgZBkphckIt49XUujFnhfoP7D_OEDg
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
