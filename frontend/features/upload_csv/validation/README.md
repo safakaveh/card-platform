@@ -1,3 +1,0 @@
-zod
-
-schemas
