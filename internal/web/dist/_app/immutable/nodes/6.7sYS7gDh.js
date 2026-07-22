@@ -1,0 +1,1 @@
+import{ct as e,k as t,w as n}from"../chunks/Ddl9pE7C.js";import"../chunks/xihTtKlq.js";function r(r){e(),n(r,t(`up load`))}export{r as component};
