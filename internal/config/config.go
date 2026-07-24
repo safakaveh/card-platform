@@ -13,7 +13,7 @@ func load() *EnvConf {
 	loadfile.LoadEnvFile()
 	cfg := &EnvConf{}
 
-	cfg.AppHttpPort = getEnv("APP_HTTP_PORT", "8080")
+	cfg.AppHttpPort = getEnvAsInt("APP_HTTP_PORT", 8080)
 
 	cfg.AppVersion = getEnv("APP_VERSION", "2.0.0")
 
@@ -23,7 +23,7 @@ func load() *EnvConf {
 
 	cfg.DbDriver = getEnv("DB_DRIVER", "postgres")
 
-	cfg.dbDatasourceName = getEnv("DB_DATASOURCE_NAME", "./data.db")
+	cfg.DbDatasourceName = getEnv("DB_DATASOURCE_NAME", "./data.db")
 
 	return cfg
 }

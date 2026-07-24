@@ -11,7 +11,7 @@ import (
 
 const countMifareDataByCardUUID = `-- name: CountMifareDataByCardUUID :one
 SELECT COUNT(*) AS count
-FROM card_platform_mifare_data
+FROM mifare_data
 WHERE uuid_card = ?
 `
 
@@ -23,7 +23,7 @@ func (q *Queries) CountMifareDataByCardUUID(ctx context.Context, uuidCard string
 }
 
 const createMifareData = `-- name: CreateMifareData :exec
-INSERT INTO card_platform_mifare_data (
+INSERT INTO mifare_data (
     uuid,
     uuid_card,
     block_no,
@@ -58,7 +58,7 @@ func (q *Queries) CreateMifareData(ctx context.Context, arg CreateMifareDataPara
 }
 
 const deleteMifareDataByCardBlock = `-- name: DeleteMifareDataByCardBlock :exec
-DELETE FROM card_platform_mifare_data
+DELETE FROM mifare_data
 WHERE uuid_card = ?
   AND block_no = ?
 `
@@ -74,7 +74,7 @@ func (q *Queries) DeleteMifareDataByCardBlock(ctx context.Context, arg DeleteMif
 }
 
 const deleteMifareDataByCardUUID = `-- name: DeleteMifareDataByCardUUID :exec
-DELETE FROM card_platform_mifare_data
+DELETE FROM mifare_data
 WHERE uuid_card = ?
 `
 
@@ -84,7 +84,7 @@ func (q *Queries) DeleteMifareDataByCardUUID(ctx context.Context, uuidCard strin
 }
 
 const deleteMifareDataByUUID = `-- name: DeleteMifareDataByUUID :exec
-DELETE FROM card_platform_mifare_data
+DELETE FROM mifare_data
 WHERE uuid = ?
 `
 
@@ -102,7 +102,7 @@ SELECT
     key_b,
     content,
     created_at
-FROM card_platform_mifare_data
+FROM mifare_data
 WHERE uuid_card = ?
   AND block_no = ?
 LIMIT 1
@@ -113,9 +113,9 @@ type GetMifareDataByCardBlockParams struct {
 	BlockNo  int64  `json:"block_no"`
 }
 
-func (q *Queries) GetMifareDataByCardBlock(ctx context.Context, arg GetMifareDataByCardBlockParams) (CardPlatformMifareDatum, error) {
+func (q *Queries) GetMifareDataByCardBlock(ctx context.Context, arg GetMifareDataByCardBlockParams) (MifareDatum, error) {
 	row := q.db.QueryRowContext(ctx, getMifareDataByCardBlock, arg.UuidCard, arg.BlockNo)
-	var i CardPlatformMifareDatum
+	var i MifareDatum
 	err := row.Scan(
 		&i.Uuid,
 		&i.UuidCard,
@@ -137,14 +137,14 @@ SELECT
     key_b,
     content,
     created_at
-FROM card_platform_mifare_data
+FROM mifare_data
 WHERE uuid = ?
 LIMIT 1
 `
 
-func (q *Queries) GetMifareDataByUUID(ctx context.Context, uuid string) (CardPlatformMifareDatum, error) {
+func (q *Queries) GetMifareDataByUUID(ctx context.Context, uuid string) (MifareDatum, error) {
 	row := q.db.QueryRowContext(ctx, getMifareDataByUUID, uuid)
-	var i CardPlatformMifareDatum
+	var i MifareDatum
 	err := row.Scan(
 		&i.Uuid,
 		&i.UuidCard,
@@ -166,20 +166,20 @@ SELECT
     key_b,
     content,
     created_at
-FROM card_platform_mifare_data
+FROM mifare_data
 WHERE uuid_card = ?
 ORDER BY block_no ASC
 `
 
-func (q *Queries) ListMifareDataByCardUUID(ctx context.Context, uuidCard string) ([]CardPlatformMifareDatum, error) {
+func (q *Queries) ListMifareDataByCardUUID(ctx context.Context, uuidCard string) ([]MifareDatum, error) {
 	rows, err := q.db.QueryContext(ctx, listMifareDataByCardUUID, uuidCard)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []CardPlatformMifareDatum{}
+	items := []MifareDatum{}
 	for rows.Next() {
-		var i CardPlatformMifareDatum
+		var i MifareDatum
 		if err := rows.Scan(
 			&i.Uuid,
 			&i.UuidCard,
@@ -203,7 +203,7 @@ func (q *Queries) ListMifareDataByCardUUID(ctx context.Context, uuidCard string)
 }
 
 const updateMifareDataContent = `-- name: UpdateMifareDataContent :exec
-UPDATE card_platform_mifare_data
+UPDATE mifare_data
 SET
     key_a = ?,
     key_b = ?,
@@ -229,7 +229,7 @@ func (q *Queries) UpdateMifareDataContent(ctx context.Context, arg UpdateMifareD
 }
 
 const upsertMifareData = `-- name: UpsertMifareData :exec
-INSERT INTO card_platform_mifare_data (
+INSERT INTO mifare_data (
     uuid,
     uuid_card,
     block_no,

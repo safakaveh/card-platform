@@ -1,5 +1,5 @@
 -- name: CreateOrder :exec
-INSERT INTO card_platform_orders (
+INSERT INTO orders (
     uuid,
     order_name,
     status,
@@ -18,7 +18,7 @@ SELECT
     order_date,
     created_at,
     updated_at
-FROM card_platform_orders
+FROM orders
 WHERE uuid = ?
 LIMIT 1;
 
@@ -31,7 +31,7 @@ SELECT
     order_date,
     created_at,
     updated_at
-FROM card_platform_orders
+FROM orders
 WHERE order_name = ?
 LIMIT 1;
 
@@ -44,7 +44,7 @@ SELECT
     order_date,
     created_at,
     updated_at
-FROM card_platform_orders
+FROM orders
 ORDER BY created_at DESC;
 
 -- name: ListOrdersByStatus :many
@@ -56,19 +56,19 @@ SELECT
     order_date,
     created_at,
     updated_at
-FROM card_platform_orders
+FROM orders
 WHERE status = ?
 ORDER BY created_at DESC;
 
 -- name: UpdateOrderStatus :exec
-UPDATE card_platform_orders
+UPDATE orders
 SET
     status = ?,
     updated_at = ?
 WHERE uuid = ?;
 
 -- name: UpdateOrderInfo :exec
-UPDATE card_platform_orders
+UPDATE orders
 SET
     order_name = ?,
     status = ?,
@@ -78,21 +78,21 @@ SET
 WHERE uuid = ?;
 
 -- name: UpdateOrderDescription :exec
-UPDATE card_platform_orders
+UPDATE orders
 SET
     description = ?,
     updated_at = ?
 WHERE uuid = ?;
 
 -- name: DeleteOrderByUUID :exec
-DELETE FROM card_platform_orders
+DELETE FROM orders
 WHERE uuid = ?;
 
 -- name: CountOrders :one
 SELECT COUNT(*) AS count
-FROM card_platform_orders;
+FROM orders;
 
 -- name: CountOrdersByStatus :one
 SELECT COUNT(*) AS count
-FROM card_platform_orders
+FROM orders
 WHERE status = ?;

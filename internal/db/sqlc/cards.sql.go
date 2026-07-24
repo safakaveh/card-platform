@@ -12,7 +12,7 @@ import (
 
 const countCardsByOrderUUID = `-- name: CountCardsByOrderUUID :one
 SELECT COUNT(*) AS count
-FROM card_platform_cards
+FROM cards
 WHERE uuid_order = ?
 `
 
@@ -25,7 +25,7 @@ func (q *Queries) CountCardsByOrderUUID(ctx context.Context, uuidOrder string) (
 
 const countDoneCardsByOrderUUID = `-- name: CountDoneCardsByOrderUUID :one
 SELECT COUNT(*) AS count
-FROM card_platform_cards
+FROM cards
 WHERE uuid_order = ?
   AND is_done = 1
 `
@@ -38,7 +38,7 @@ func (q *Queries) CountDoneCardsByOrderUUID(ctx context.Context, uuidOrder strin
 }
 
 const createCard = `-- name: CreateCard :exec
-INSERT INTO card_platform_cards (
+INSERT INTO cards (
     uuid,
     uuid_order,
     has_laser,
@@ -91,7 +91,7 @@ func (q *Queries) CreateCard(ctx context.Context, arg CreateCardParams) error {
 }
 
 const deleteCardByUUID = `-- name: DeleteCardByUUID :exec
-DELETE FROM card_platform_cards
+DELETE FROM cards
 WHERE uuid = ?
 `
 
@@ -115,14 +115,14 @@ SELECT
     description,
     created_at,
     updated_at
-FROM card_platform_cards
+FROM cards
 WHERE uuid = ?
 LIMIT 1
 `
 
-func (q *Queries) GetCardByUUID(ctx context.Context, uuid string) (CardPlatformCard, error) {
+func (q *Queries) GetCardByUUID(ctx context.Context, uuid string) (Card, error) {
 	row := q.db.QueryRowContext(ctx, getCardByUUID, uuid)
-	var i CardPlatformCard
+	var i Card
 	err := row.Scan(
 		&i.Uuid,
 		&i.UuidOrder,
@@ -156,20 +156,20 @@ SELECT
     description,
     created_at,
     updated_at
-FROM card_platform_cards
+FROM cards
 WHERE uuid_order = ?
 ORDER BY created_at DESC
 `
 
-func (q *Queries) ListCardsByOrderUUID(ctx context.Context, uuidOrder string) ([]CardPlatformCard, error) {
+func (q *Queries) ListCardsByOrderUUID(ctx context.Context, uuidOrder string) ([]Card, error) {
 	rows, err := q.db.QueryContext(ctx, listCardsByOrderUUID, uuidOrder)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []CardPlatformCard{}
+	items := []Card{}
 	for rows.Next() {
-		var i CardPlatformCard
+		var i Card
 		if err := rows.Scan(
 			&i.Uuid,
 			&i.UuidOrder,
@@ -213,21 +213,21 @@ SELECT
     description,
     created_at,
     updated_at
-FROM card_platform_cards
+FROM cards
 WHERE uuid_order = ?
   AND is_done = 1
 ORDER BY created_at DESC
 `
 
-func (q *Queries) ListDoneCardsByOrderUUID(ctx context.Context, uuidOrder string) ([]CardPlatformCard, error) {
+func (q *Queries) ListDoneCardsByOrderUUID(ctx context.Context, uuidOrder string) ([]Card, error) {
 	rows, err := q.db.QueryContext(ctx, listDoneCardsByOrderUUID, uuidOrder)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []CardPlatformCard{}
+	items := []Card{}
 	for rows.Next() {
-		var i CardPlatformCard
+		var i Card
 		if err := rows.Scan(
 			&i.Uuid,
 			&i.UuidOrder,
@@ -271,21 +271,21 @@ SELECT
     description,
     created_at,
     updated_at
-FROM card_platform_cards
+FROM cards
 WHERE uuid_order = ?
   AND is_done = 0
 ORDER BY created_at DESC
 `
 
-func (q *Queries) ListPendingCardsByOrderUUID(ctx context.Context, uuidOrder string) ([]CardPlatformCard, error) {
+func (q *Queries) ListPendingCardsByOrderUUID(ctx context.Context, uuidOrder string) ([]Card, error) {
 	rows, err := q.db.QueryContext(ctx, listPendingCardsByOrderUUID, uuidOrder)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []CardPlatformCard{}
+	items := []Card{}
 	for rows.Next() {
-		var i CardPlatformCard
+		var i Card
 		if err := rows.Scan(
 			&i.Uuid,
 			&i.UuidOrder,
@@ -315,7 +315,7 @@ func (q *Queries) ListPendingCardsByOrderUUID(ctx context.Context, uuidOrder str
 }
 
 const updateCardDescription = `-- name: UpdateCardDescription :exec
-UPDATE card_platform_cards
+UPDATE cards
 SET
     description = ?,
     updated_at = ?
@@ -334,7 +334,7 @@ func (q *Queries) UpdateCardDescription(ctx context.Context, arg UpdateCardDescr
 }
 
 const updateCardDoneStatus = `-- name: UpdateCardDoneStatus :exec
-UPDATE card_platform_cards
+UPDATE cards
 SET
     is_done = ?,
     updated_at = ?
@@ -353,7 +353,7 @@ func (q *Queries) UpdateCardDoneStatus(ctx context.Context, arg UpdateCardDoneSt
 }
 
 const updateCardFlagsAndDescription = `-- name: UpdateCardFlagsAndDescription :exec
-UPDATE card_platform_cards
+UPDATE cards
 SET
     has_laser = ?,
     has_magnet = ?,

@@ -5,14 +5,14 @@ import (
 )
 
 type EnvConf struct {
-	AppHttpPort string
+	AppHttpPort int
 	AppName     string
 	AppVersion  string
 
 	LogLevel string
 
 	DbDriver         string
-	dbDatasourceName string
+	DbDatasourceName string
 }
 
 var (

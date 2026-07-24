@@ -11,7 +11,7 @@ import (
 
 const countLaserDataByCardUUID = `-- name: CountLaserDataByCardUUID :one
 SELECT COUNT(*) AS count
-FROM card_platform_laser_data
+FROM laser_data
 WHERE uuid_card = ?
 `
 
@@ -23,7 +23,7 @@ func (q *Queries) CountLaserDataByCardUUID(ctx context.Context, uuidCard string)
 }
 
 const createLaserData = `-- name: CreateLaserData :exec
-INSERT INTO card_platform_laser_data (
+INSERT INTO laser_data (
     uuid,
     uuid_card,
     side,
@@ -58,7 +58,7 @@ func (q *Queries) CreateLaserData(ctx context.Context, arg CreateLaserDataParams
 }
 
 const deleteLaserDataByCardSideRow = `-- name: DeleteLaserDataByCardSideRow :exec
-DELETE FROM card_platform_laser_data
+DELETE FROM laser_data
 WHERE uuid_card = ?
   AND side = ?
   AND row_no = ?
@@ -76,7 +76,7 @@ func (q *Queries) DeleteLaserDataByCardSideRow(ctx context.Context, arg DeleteLa
 }
 
 const deleteLaserDataByCardUUID = `-- name: DeleteLaserDataByCardUUID :exec
-DELETE FROM card_platform_laser_data
+DELETE FROM laser_data
 WHERE uuid_card = ?
 `
 
@@ -86,7 +86,7 @@ func (q *Queries) DeleteLaserDataByCardUUID(ctx context.Context, uuidCard string
 }
 
 const deleteLaserDataByUUID = `-- name: DeleteLaserDataByUUID :exec
-DELETE FROM card_platform_laser_data
+DELETE FROM laser_data
 WHERE uuid = ?
 `
 
@@ -104,7 +104,7 @@ SELECT
     content_type,
     content,
     created_at
-FROM card_platform_laser_data
+FROM laser_data
 WHERE uuid_card = ?
   AND side = ?
   AND row_no = ?
@@ -117,9 +117,9 @@ type GetLaserDataByCardSideRowParams struct {
 	RowNo    int64  `json:"row_no"`
 }
 
-func (q *Queries) GetLaserDataByCardSideRow(ctx context.Context, arg GetLaserDataByCardSideRowParams) (CardPlatformLaserDatum, error) {
+func (q *Queries) GetLaserDataByCardSideRow(ctx context.Context, arg GetLaserDataByCardSideRowParams) (LaserDatum, error) {
 	row := q.db.QueryRowContext(ctx, getLaserDataByCardSideRow, arg.UuidCard, arg.Side, arg.RowNo)
-	var i CardPlatformLaserDatum
+	var i LaserDatum
 	err := row.Scan(
 		&i.Uuid,
 		&i.UuidCard,
@@ -141,14 +141,14 @@ SELECT
     content_type,
     content,
     created_at
-FROM card_platform_laser_data
+FROM laser_data
 WHERE uuid = ?
 LIMIT 1
 `
 
-func (q *Queries) GetLaserDataByUUID(ctx context.Context, uuid string) (CardPlatformLaserDatum, error) {
+func (q *Queries) GetLaserDataByUUID(ctx context.Context, uuid string) (LaserDatum, error) {
 	row := q.db.QueryRowContext(ctx, getLaserDataByUUID, uuid)
-	var i CardPlatformLaserDatum
+	var i LaserDatum
 	err := row.Scan(
 		&i.Uuid,
 		&i.UuidCard,
@@ -170,20 +170,20 @@ SELECT
     content_type,
     content,
     created_at
-FROM card_platform_laser_data
+FROM laser_data
 WHERE uuid_card = ?
 ORDER BY side ASC, row_no ASC
 `
 
-func (q *Queries) ListLaserDataByCardUUID(ctx context.Context, uuidCard string) ([]CardPlatformLaserDatum, error) {
+func (q *Queries) ListLaserDataByCardUUID(ctx context.Context, uuidCard string) ([]LaserDatum, error) {
 	rows, err := q.db.QueryContext(ctx, listLaserDataByCardUUID, uuidCard)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []CardPlatformLaserDatum{}
+	items := []LaserDatum{}
 	for rows.Next() {
-		var i CardPlatformLaserDatum
+		var i LaserDatum
 		if err := rows.Scan(
 			&i.Uuid,
 			&i.UuidCard,
@@ -215,7 +215,7 @@ SELECT
     content_type,
     content,
     created_at
-FROM card_platform_laser_data
+FROM laser_data
 WHERE uuid_card = ?
   AND side = ?
 ORDER BY row_no ASC
@@ -226,15 +226,15 @@ type ListLaserDataByCardUUIDAndSideParams struct {
 	Side     string `json:"side"`
 }
 
-func (q *Queries) ListLaserDataByCardUUIDAndSide(ctx context.Context, arg ListLaserDataByCardUUIDAndSideParams) ([]CardPlatformLaserDatum, error) {
+func (q *Queries) ListLaserDataByCardUUIDAndSide(ctx context.Context, arg ListLaserDataByCardUUIDAndSideParams) ([]LaserDatum, error) {
 	rows, err := q.db.QueryContext(ctx, listLaserDataByCardUUIDAndSide, arg.UuidCard, arg.Side)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []CardPlatformLaserDatum{}
+	items := []LaserDatum{}
 	for rows.Next() {
-		var i CardPlatformLaserDatum
+		var i LaserDatum
 		if err := rows.Scan(
 			&i.Uuid,
 			&i.UuidCard,
@@ -258,7 +258,7 @@ func (q *Queries) ListLaserDataByCardUUIDAndSide(ctx context.Context, arg ListLa
 }
 
 const updateLaserDataContent = `-- name: UpdateLaserDataContent :exec
-UPDATE card_platform_laser_data
+UPDATE laser_data
 SET
     content_type = ?,
     content = ?
@@ -277,7 +277,7 @@ func (q *Queries) UpdateLaserDataContent(ctx context.Context, arg UpdateLaserDat
 }
 
 const upsertLaserData = `-- name: UpsertLaserData :exec
-INSERT INTO card_platform_laser_data (
+INSERT INTO laser_data (
     uuid,
     uuid_card,
     side,

@@ -11,7 +11,7 @@ import (
 
 const countMagnetDataByCardUUID = `-- name: CountMagnetDataByCardUUID :one
 SELECT COUNT(*) AS count
-FROM card_platform_magnet_data
+FROM magnet_data
 WHERE uuid_card = ?
 `
 
@@ -23,7 +23,7 @@ func (q *Queries) CountMagnetDataByCardUUID(ctx context.Context, uuidCard string
 }
 
 const createMagnetData = `-- name: CreateMagnetData :exec
-INSERT INTO card_platform_magnet_data (
+INSERT INTO magnet_data (
     uuid,
     uuid_card,
     track_no,
@@ -52,7 +52,7 @@ func (q *Queries) CreateMagnetData(ctx context.Context, arg CreateMagnetDataPara
 }
 
 const deleteMagnetDataByCardTrack = `-- name: DeleteMagnetDataByCardTrack :exec
-DELETE FROM card_platform_magnet_data
+DELETE FROM magnet_data
 WHERE uuid_card = ?
   AND track_no = ?
 `
@@ -68,7 +68,7 @@ func (q *Queries) DeleteMagnetDataByCardTrack(ctx context.Context, arg DeleteMag
 }
 
 const deleteMagnetDataByCardUUID = `-- name: DeleteMagnetDataByCardUUID :exec
-DELETE FROM card_platform_magnet_data
+DELETE FROM magnet_data
 WHERE uuid_card = ?
 `
 
@@ -78,7 +78,7 @@ func (q *Queries) DeleteMagnetDataByCardUUID(ctx context.Context, uuidCard strin
 }
 
 const deleteMagnetDataByUUID = `-- name: DeleteMagnetDataByUUID :exec
-DELETE FROM card_platform_magnet_data
+DELETE FROM magnet_data
 WHERE uuid = ?
 `
 
@@ -94,7 +94,7 @@ SELECT
     track_no,
     content,
     created_at
-FROM card_platform_magnet_data
+FROM magnet_data
 WHERE uuid_card = ?
   AND track_no = ?
 LIMIT 1
@@ -105,9 +105,9 @@ type GetMagnetDataByCardTrackParams struct {
 	TrackNo  int64  `json:"track_no"`
 }
 
-func (q *Queries) GetMagnetDataByCardTrack(ctx context.Context, arg GetMagnetDataByCardTrackParams) (CardPlatformMagnetDatum, error) {
+func (q *Queries) GetMagnetDataByCardTrack(ctx context.Context, arg GetMagnetDataByCardTrackParams) (MagnetDatum, error) {
 	row := q.db.QueryRowContext(ctx, getMagnetDataByCardTrack, arg.UuidCard, arg.TrackNo)
-	var i CardPlatformMagnetDatum
+	var i MagnetDatum
 	err := row.Scan(
 		&i.Uuid,
 		&i.UuidCard,
@@ -125,14 +125,14 @@ SELECT
     track_no,
     content,
     created_at
-FROM card_platform_magnet_data
+FROM magnet_data
 WHERE uuid = ?
 LIMIT 1
 `
 
-func (q *Queries) GetMagnetDataByUUID(ctx context.Context, uuid string) (CardPlatformMagnetDatum, error) {
+func (q *Queries) GetMagnetDataByUUID(ctx context.Context, uuid string) (MagnetDatum, error) {
 	row := q.db.QueryRowContext(ctx, getMagnetDataByUUID, uuid)
-	var i CardPlatformMagnetDatum
+	var i MagnetDatum
 	err := row.Scan(
 		&i.Uuid,
 		&i.UuidCard,
@@ -150,20 +150,20 @@ SELECT
     track_no,
     content,
     created_at
-FROM card_platform_magnet_data
+FROM magnet_data
 WHERE uuid_card = ?
 ORDER BY track_no ASC
 `
 
-func (q *Queries) ListMagnetDataByCardUUID(ctx context.Context, uuidCard string) ([]CardPlatformMagnetDatum, error) {
+func (q *Queries) ListMagnetDataByCardUUID(ctx context.Context, uuidCard string) ([]MagnetDatum, error) {
 	rows, err := q.db.QueryContext(ctx, listMagnetDataByCardUUID, uuidCard)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []CardPlatformMagnetDatum{}
+	items := []MagnetDatum{}
 	for rows.Next() {
-		var i CardPlatformMagnetDatum
+		var i MagnetDatum
 		if err := rows.Scan(
 			&i.Uuid,
 			&i.UuidCard,
@@ -185,7 +185,7 @@ func (q *Queries) ListMagnetDataByCardUUID(ctx context.Context, uuidCard string)
 }
 
 const updateMagnetDataContent = `-- name: UpdateMagnetDataContent :exec
-UPDATE card_platform_magnet_data
+UPDATE magnet_data
 SET
     content = ?
 WHERE uuid = ?
@@ -202,7 +202,7 @@ func (q *Queries) UpdateMagnetDataContent(ctx context.Context, arg UpdateMagnetD
 }
 
 const upsertMagnetData = `-- name: UpsertMagnetData :exec
-INSERT INTO card_platform_magnet_data (
+INSERT INTO magnet_data (
     uuid,
     uuid_card,
     track_no,

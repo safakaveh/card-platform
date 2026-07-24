@@ -1,5 +1,5 @@
 -- name: CreateCard :exec
-INSERT INTO card_platform_cards (
+INSERT INTO cards (
     uuid,
     uuid_order,
     has_laser,
@@ -30,7 +30,7 @@ SELECT
     description,
     created_at,
     updated_at
-FROM card_platform_cards
+FROM cards
 WHERE uuid = ?
 LIMIT 1;
 
@@ -49,7 +49,7 @@ SELECT
     description,
     created_at,
     updated_at
-FROM card_platform_cards
+FROM cards
 WHERE uuid_order = ?
 ORDER BY created_at DESC;
 
@@ -68,7 +68,7 @@ SELECT
     description,
     created_at,
     updated_at
-FROM card_platform_cards
+FROM cards
 WHERE uuid_order = ?
   AND is_done = 1
 ORDER BY created_at DESC;
@@ -88,13 +88,13 @@ SELECT
     description,
     created_at,
     updated_at
-FROM card_platform_cards
+FROM cards
 WHERE uuid_order = ?
   AND is_done = 0
 ORDER BY created_at DESC;
 
 -- name: UpdateCardFlagsAndDescription :exec
-UPDATE card_platform_cards
+UPDATE cards
 SET
     has_laser = ?,
     has_magnet = ?,
@@ -109,30 +109,30 @@ SET
 WHERE uuid = ?;
 
 -- name: UpdateCardDoneStatus :exec
-UPDATE card_platform_cards
+UPDATE cards
 SET
     is_done = ?,
     updated_at = ?
 WHERE uuid = ?;
 
 -- name: UpdateCardDescription :exec
-UPDATE card_platform_cards
+UPDATE cards
 SET
     description = ?,
     updated_at = ?
 WHERE uuid = ?;
 
 -- name: DeleteCardByUUID :exec
-DELETE FROM card_platform_cards
+DELETE FROM cards
 WHERE uuid = ?;
 
 -- name: CountCardsByOrderUUID :one
 SELECT COUNT(*) AS count
-FROM card_platform_cards
+FROM cards
 WHERE uuid_order = ?;
 
 -- name: CountDoneCardsByOrderUUID :one
 SELECT COUNT(*) AS count
-FROM card_platform_cards
+FROM cards
 WHERE uuid_order = ?
   AND is_done = 1;

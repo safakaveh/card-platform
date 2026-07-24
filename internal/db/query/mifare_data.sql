@@ -1,5 +1,5 @@
 -- name: CreateMifareData :exec
-INSERT INTO card_platform_mifare_data (
+INSERT INTO mifare_data (
     uuid,
     uuid_card,
     block_no,
@@ -10,7 +10,7 @@ INSERT INTO card_platform_mifare_data (
 ) VALUES (?, ?, ?, ?, ?, ?, ?);
 
 -- name: UpsertMifareData :exec
-INSERT INTO card_platform_mifare_data (
+INSERT INTO mifare_data (
     uuid,
     uuid_card,
     block_no,
@@ -33,7 +33,7 @@ SELECT
     key_b,
     content,
     created_at
-FROM card_platform_mifare_data
+FROM mifare_data
 WHERE uuid = ?
 LIMIT 1;
 
@@ -46,7 +46,7 @@ SELECT
     key_b,
     content,
     created_at
-FROM card_platform_mifare_data
+FROM mifare_data
 WHERE uuid_card = ?
   AND block_no = ?
 LIMIT 1;
@@ -60,12 +60,12 @@ SELECT
     key_b,
     content,
     created_at
-FROM card_platform_mifare_data
+FROM mifare_data
 WHERE uuid_card = ?
 ORDER BY block_no ASC;
 
 -- name: UpdateMifareDataContent :exec
-UPDATE card_platform_mifare_data
+UPDATE mifare_data
 SET
     key_a = ?,
     key_b = ?,
@@ -73,19 +73,19 @@ SET
 WHERE uuid = ?;
 
 -- name: DeleteMifareDataByUUID :exec
-DELETE FROM card_platform_mifare_data
+DELETE FROM mifare_data
 WHERE uuid = ?;
 
 -- name: DeleteMifareDataByCardUUID :exec
-DELETE FROM card_platform_mifare_data
+DELETE FROM mifare_data
 WHERE uuid_card = ?;
 
 -- name: DeleteMifareDataByCardBlock :exec
-DELETE FROM card_platform_mifare_data
+DELETE FROM mifare_data
 WHERE uuid_card = ?
   AND block_no = ?;
 
 -- name: CountMifareDataByCardUUID :one
 SELECT COUNT(*) AS count
-FROM card_platform_mifare_data
+FROM mifare_data
 WHERE uuid_card = ?;

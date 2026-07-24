@@ -1,5 +1,5 @@
 -- name: CreateLaserData :exec
-INSERT INTO card_platform_laser_data (
+INSERT INTO laser_data (
     uuid,
     uuid_card,
     side,
@@ -10,7 +10,7 @@ INSERT INTO card_platform_laser_data (
 ) VALUES (?, ?, ?, ?, ?, ?, ?);
 
 -- name: UpsertLaserData :exec
-INSERT INTO card_platform_laser_data (
+INSERT INTO laser_data (
     uuid,
     uuid_card,
     side,
@@ -32,7 +32,7 @@ SELECT
     content_type,
     content,
     created_at
-FROM card_platform_laser_data
+FROM laser_data
 WHERE uuid = ?
 LIMIT 1;
 
@@ -45,7 +45,7 @@ SELECT
     content_type,
     content,
     created_at
-FROM card_platform_laser_data
+FROM laser_data
 WHERE uuid_card = ?
   AND side = ?
   AND row_no = ?
@@ -60,7 +60,7 @@ SELECT
     content_type,
     content,
     created_at
-FROM card_platform_laser_data
+FROM laser_data
 WHERE uuid_card = ?
 ORDER BY side ASC, row_no ASC;
 
@@ -73,33 +73,33 @@ SELECT
     content_type,
     content,
     created_at
-FROM card_platform_laser_data
+FROM laser_data
 WHERE uuid_card = ?
   AND side = ?
 ORDER BY row_no ASC;
 
 -- name: UpdateLaserDataContent :exec
-UPDATE card_platform_laser_data
+UPDATE laser_data
 SET
     content_type = ?,
     content = ?
 WHERE uuid = ?;
 
 -- name: DeleteLaserDataByUUID :exec
-DELETE FROM card_platform_laser_data
+DELETE FROM laser_data
 WHERE uuid = ?;
 
 -- name: DeleteLaserDataByCardUUID :exec
-DELETE FROM card_platform_laser_data
+DELETE FROM laser_data
 WHERE uuid_card = ?;
 
 -- name: DeleteLaserDataByCardSideRow :exec
-DELETE FROM card_platform_laser_data
+DELETE FROM laser_data
 WHERE uuid_card = ?
   AND side = ?
   AND row_no = ?;
 
 -- name: CountLaserDataByCardUUID :one
 SELECT COUNT(*) AS count
-FROM card_platform_laser_data
+FROM laser_data
 WHERE uuid_card = ?;

@@ -12,7 +12,7 @@ import (
 
 const countOrders = `-- name: CountOrders :one
 SELECT COUNT(*) AS count
-FROM card_platform_orders
+FROM orders
 `
 
 func (q *Queries) CountOrders(ctx context.Context) (int64, error) {
@@ -24,7 +24,7 @@ func (q *Queries) CountOrders(ctx context.Context) (int64, error) {
 
 const countOrdersByStatus = `-- name: CountOrdersByStatus :one
 SELECT COUNT(*) AS count
-FROM card_platform_orders
+FROM orders
 WHERE status = ?
 `
 
@@ -36,7 +36,7 @@ func (q *Queries) CountOrdersByStatus(ctx context.Context, status string) (int64
 }
 
 const createOrder = `-- name: CreateOrder :exec
-INSERT INTO card_platform_orders (
+INSERT INTO orders (
     uuid,
     order_name,
     status,
@@ -71,7 +71,7 @@ func (q *Queries) CreateOrder(ctx context.Context, arg CreateOrderParams) error 
 }
 
 const deleteOrderByUUID = `-- name: DeleteOrderByUUID :exec
-DELETE FROM card_platform_orders
+DELETE FROM orders
 WHERE uuid = ?
 `
 
@@ -89,14 +89,14 @@ SELECT
     order_date,
     created_at,
     updated_at
-FROM card_platform_orders
+FROM orders
 WHERE order_name = ?
 LIMIT 1
 `
 
-func (q *Queries) GetOrderByName(ctx context.Context, orderName string) (CardPlatformOrder, error) {
+func (q *Queries) GetOrderByName(ctx context.Context, orderName string) (Order, error) {
 	row := q.db.QueryRowContext(ctx, getOrderByName, orderName)
-	var i CardPlatformOrder
+	var i Order
 	err := row.Scan(
 		&i.Uuid,
 		&i.OrderName,
@@ -118,14 +118,14 @@ SELECT
     order_date,
     created_at,
     updated_at
-FROM card_platform_orders
+FROM orders
 WHERE uuid = ?
 LIMIT 1
 `
 
-func (q *Queries) GetOrderByUUID(ctx context.Context, uuid string) (CardPlatformOrder, error) {
+func (q *Queries) GetOrderByUUID(ctx context.Context, uuid string) (Order, error) {
 	row := q.db.QueryRowContext(ctx, getOrderByUUID, uuid)
-	var i CardPlatformOrder
+	var i Order
 	err := row.Scan(
 		&i.Uuid,
 		&i.OrderName,
@@ -147,19 +147,19 @@ SELECT
     order_date,
     created_at,
     updated_at
-FROM card_platform_orders
+FROM orders
 ORDER BY created_at DESC
 `
 
-func (q *Queries) ListOrders(ctx context.Context) ([]CardPlatformOrder, error) {
+func (q *Queries) ListOrders(ctx context.Context) ([]Order, error) {
 	rows, err := q.db.QueryContext(ctx, listOrders)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []CardPlatformOrder{}
+	items := []Order{}
 	for rows.Next() {
-		var i CardPlatformOrder
+		var i Order
 		if err := rows.Scan(
 			&i.Uuid,
 			&i.OrderName,
@@ -191,20 +191,20 @@ SELECT
     order_date,
     created_at,
     updated_at
-FROM card_platform_orders
+FROM orders
 WHERE status = ?
 ORDER BY created_at DESC
 `
 
-func (q *Queries) ListOrdersByStatus(ctx context.Context, status string) ([]CardPlatformOrder, error) {
+func (q *Queries) ListOrdersByStatus(ctx context.Context, status string) ([]Order, error) {
 	rows, err := q.db.QueryContext(ctx, listOrdersByStatus, status)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []CardPlatformOrder{}
+	items := []Order{}
 	for rows.Next() {
-		var i CardPlatformOrder
+		var i Order
 		if err := rows.Scan(
 			&i.Uuid,
 			&i.OrderName,
@@ -228,7 +228,7 @@ func (q *Queries) ListOrdersByStatus(ctx context.Context, status string) ([]Card
 }
 
 const updateOrderDescription = `-- name: UpdateOrderDescription :exec
-UPDATE card_platform_orders
+UPDATE orders
 SET
     description = ?,
     updated_at = ?
@@ -247,7 +247,7 @@ func (q *Queries) UpdateOrderDescription(ctx context.Context, arg UpdateOrderDes
 }
 
 const updateOrderInfo = `-- name: UpdateOrderInfo :exec
-UPDATE card_platform_orders
+UPDATE orders
 SET
     order_name = ?,
     status = ?,
@@ -279,7 +279,7 @@ func (q *Queries) UpdateOrderInfo(ctx context.Context, arg UpdateOrderInfoParams
 }
 
 const updateOrderStatus = `-- name: UpdateOrderStatus :exec
-UPDATE card_platform_orders
+UPDATE orders
 SET
     status = ?,
     updated_at = ?

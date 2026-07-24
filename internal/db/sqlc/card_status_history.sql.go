@@ -11,7 +11,7 @@ import (
 
 const countCardStatusHistoryByCardUUID = `-- name: CountCardStatusHistoryByCardUUID :one
 SELECT COUNT(*) AS count
-FROM card_platform_card_status_history
+FROM card_status_history
 WHERE uuid_card = ?
 `
 
@@ -23,7 +23,7 @@ func (q *Queries) CountCardStatusHistoryByCardUUID(ctx context.Context, uuidCard
 }
 
 const createCardStatusHistory = `-- name: CreateCardStatusHistory :exec
-INSERT INTO card_platform_card_status_history (
+INSERT INTO card_status_history (
     uuid,
     uuid_card,
     status,
@@ -49,7 +49,7 @@ func (q *Queries) CreateCardStatusHistory(ctx context.Context, arg CreateCardSta
 }
 
 const deleteCardStatusHistoriesByCardUUID = `-- name: DeleteCardStatusHistoriesByCardUUID :exec
-DELETE FROM card_platform_card_status_history
+DELETE FROM card_status_history
 WHERE uuid_card = ?
 `
 
@@ -59,7 +59,7 @@ func (q *Queries) DeleteCardStatusHistoriesByCardUUID(ctx context.Context, uuidC
 }
 
 const deleteCardStatusHistoryByUUID = `-- name: DeleteCardStatusHistoryByUUID :exec
-DELETE FROM card_platform_card_status_history
+DELETE FROM card_status_history
 WHERE uuid = ?
 `
 
@@ -74,14 +74,14 @@ SELECT
     uuid_card,
     status,
     created_at
-FROM card_platform_card_status_history
+FROM card_status_history
 WHERE uuid = ?
 LIMIT 1
 `
 
-func (q *Queries) GetCardStatusHistoryByUUID(ctx context.Context, uuid string) (CardPlatformCardStatusHistory, error) {
+func (q *Queries) GetCardStatusHistoryByUUID(ctx context.Context, uuid string) (CardStatusHistory, error) {
 	row := q.db.QueryRowContext(ctx, getCardStatusHistoryByUUID, uuid)
-	var i CardPlatformCardStatusHistory
+	var i CardStatusHistory
 	err := row.Scan(
 		&i.Uuid,
 		&i.UuidCard,
@@ -97,15 +97,15 @@ SELECT
     uuid_card,
     status,
     created_at
-FROM card_platform_card_status_history
+FROM card_status_history
 WHERE uuid_card = ?
 ORDER BY created_at DESC
 LIMIT 1
 `
 
-func (q *Queries) GetLatestCardStatusByCardUUID(ctx context.Context, uuidCard string) (CardPlatformCardStatusHistory, error) {
+func (q *Queries) GetLatestCardStatusByCardUUID(ctx context.Context, uuidCard string) (CardStatusHistory, error) {
 	row := q.db.QueryRowContext(ctx, getLatestCardStatusByCardUUID, uuidCard)
-	var i CardPlatformCardStatusHistory
+	var i CardStatusHistory
 	err := row.Scan(
 		&i.Uuid,
 		&i.UuidCard,
@@ -121,20 +121,20 @@ SELECT
     uuid_card,
     status,
     created_at
-FROM card_platform_card_status_history
+FROM card_status_history
 WHERE uuid_card = ?
 ORDER BY created_at ASC
 `
 
-func (q *Queries) ListCardStatusHistoryByCardUUID(ctx context.Context, uuidCard string) ([]CardPlatformCardStatusHistory, error) {
+func (q *Queries) ListCardStatusHistoryByCardUUID(ctx context.Context, uuidCard string) ([]CardStatusHistory, error) {
 	rows, err := q.db.QueryContext(ctx, listCardStatusHistoryByCardUUID, uuidCard)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []CardPlatformCardStatusHistory{}
+	items := []CardStatusHistory{}
 	for rows.Next() {
-		var i CardPlatformCardStatusHistory
+		var i CardStatusHistory
 		if err := rows.Scan(
 			&i.Uuid,
 			&i.UuidCard,

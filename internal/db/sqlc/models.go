@@ -8,7 +8,7 @@ import (
 	"database/sql"
 )
 
-type CardPlatformCard struct {
+type Card struct {
 	Uuid           string         `json:"uuid"`
 	UuidOrder      string         `json:"uuid_order"`
 	HasLaser       int64          `json:"has_laser"`
@@ -24,14 +24,14 @@ type CardPlatformCard struct {
 	UpdatedAt      int64          `json:"updated_at"`
 }
 
-type CardPlatformCardStatusHistory struct {
+type CardStatusHistory struct {
 	Uuid      string `json:"uuid"`
 	UuidCard  string `json:"uuid_card"`
 	Status    string `json:"status"`
 	CreatedAt int64  `json:"created_at"`
 }
 
-type CardPlatformLaserDatum struct {
+type LaserDatum struct {
 	Uuid        string `json:"uuid"`
 	UuidCard    string `json:"uuid_card"`
 	Side        string `json:"side"`
@@ -41,7 +41,7 @@ type CardPlatformLaserDatum struct {
 	CreatedAt   int64  `json:"created_at"`
 }
 
-type CardPlatformMagnetDatum struct {
+type MagnetDatum struct {
 	Uuid      string `json:"uuid"`
 	UuidCard  string `json:"uuid_card"`
 	TrackNo   int64  `json:"track_no"`
@@ -49,7 +49,7 @@ type CardPlatformMagnetDatum struct {
 	CreatedAt int64  `json:"created_at"`
 }
 
-type CardPlatformMifareDatum struct {
+type MifareDatum struct {
 	Uuid      string `json:"uuid"`
 	UuidCard  string `json:"uuid_card"`
 	BlockNo   int64  `json:"block_no"`
@@ -59,7 +59,7 @@ type CardPlatformMifareDatum struct {
 	CreatedAt int64  `json:"created_at"`
 }
 
-type CardPlatformOrder struct {
+type Order struct {
 	Uuid        string         `json:"uuid"`
 	OrderName   string         `json:"order_name"`
 	Status      string         `json:"status"`

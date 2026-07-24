@@ -1,5 +1,5 @@
 -- name: CreateMagnetData :exec
-INSERT INTO card_platform_magnet_data (
+INSERT INTO magnet_data (
     uuid,
     uuid_card,
     track_no,
@@ -8,7 +8,7 @@ INSERT INTO card_platform_magnet_data (
 ) VALUES (?, ?, ?, ?, ?);
 
 -- name: UpsertMagnetData :exec
-INSERT INTO card_platform_magnet_data (
+INSERT INTO magnet_data (
     uuid,
     uuid_card,
     track_no,
@@ -25,7 +25,7 @@ SELECT
     track_no,
     content,
     created_at
-FROM card_platform_magnet_data
+FROM magnet_data
 WHERE uuid = ?
 LIMIT 1;
 
@@ -36,7 +36,7 @@ SELECT
     track_no,
     content,
     created_at
-FROM card_platform_magnet_data
+FROM magnet_data
 WHERE uuid_card = ?
   AND track_no = ?
 LIMIT 1;
@@ -48,30 +48,30 @@ SELECT
     track_no,
     content,
     created_at
-FROM card_platform_magnet_data
+FROM magnet_data
 WHERE uuid_card = ?
 ORDER BY track_no ASC;
 
 -- name: UpdateMagnetDataContent :exec
-UPDATE card_platform_magnet_data
+UPDATE magnet_data
 SET
     content = ?
 WHERE uuid = ?;
 
 -- name: DeleteMagnetDataByUUID :exec
-DELETE FROM card_platform_magnet_data
+DELETE FROM magnet_data
 WHERE uuid = ?;
 
 -- name: DeleteMagnetDataByCardUUID :exec
-DELETE FROM card_platform_magnet_data
+DELETE FROM magnet_data
 WHERE uuid_card = ?;
 
 -- name: DeleteMagnetDataByCardTrack :exec
-DELETE FROM card_platform_magnet_data
+DELETE FROM magnet_data
 WHERE uuid_card = ?
   AND track_no = ?;
 
 -- name: CountMagnetDataByCardUUID :one
 SELECT COUNT(*) AS count
-FROM card_platform_magnet_data
+FROM magnet_data
 WHERE uuid_card = ?;
