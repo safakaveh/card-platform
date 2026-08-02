@@ -6,6 +6,6 @@
 	<title>ویرایش فایل</title>
 </svelte:head>
 
-<div class="flex min-h-screen items-center justify-center">
+<div class="w-full">
 	{@render children()}
 </div>

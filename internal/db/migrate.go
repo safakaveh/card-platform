@@ -9,7 +9,6 @@ import (
 	"errors"
 	"fmt"
 	"io/fs"
-	"path/filepath"
 	"sort"
 	"strings"
 )
@@ -48,7 +47,7 @@ func Migrate(ctx context.Context, database *sql.DB) error {
 
 		name := entry.Name()
 
-		if strings.EqualFold(filepath.Ext(name), ".sql") {
+		if strings.HasSuffix(strings.ToLower(name), ".up.sql") {
 			migrations = append(migrations, name)
 		}
 	}

@@ -30,7 +30,7 @@ func main() {
 		}
 	}()
 
-	handlers := initialization.NewHandler(&shutdownRequest)
+	handlers := initialization.NewHandler(&shutdownRequest, DBServer.Database)
 	chiRouters := initialization.NewChiRoute(handlers)
 
 	server := initialization.NewWebServer(chiRouters.Router, shutdownRequest)

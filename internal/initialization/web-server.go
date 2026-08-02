@@ -37,8 +37,8 @@ func (s Server) Start() {
 		Addr:              s.Addr,
 		Handler:           s.Handler,
 		ReadHeaderTimeout: 5 * time.Second,
-		ReadTimeout:       15 * time.Second,
-		WriteTimeout:      15 * time.Second,
+		ReadTimeout:       0,
+		WriteTimeout:      0,
 		IdleTimeout:       60 * time.Second,
 	}
 	url := "http://" + s.Addr

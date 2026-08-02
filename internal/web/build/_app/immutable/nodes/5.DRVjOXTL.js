@@ -1,1 +1,0 @@
-import{ct as e,k as t,w as n}from"../chunks/Ddl9pE7C.js";import"../chunks/xihTtKlq.js";function r(r){e(),n(r,t(`edit file`))}export{r as component};

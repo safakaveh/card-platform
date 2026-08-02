@@ -1,0 +1,1 @@
+import{A as e,O as t,W as n,X as r,Y as i,_ as a,b as o,gt as s}from"../chunks/tN3YEEIl.js";import"../chunks/xihTtKlq.js";var c=e(`<div class="w-full"><!></div>`);function l(e,l){var u=c();a(`1a09pr8`,e=>{n(()=>{i.title=`ویرایش فایل`})}),o(r(u),()=>l.children),s(u),t(e,u)}export{l as component};

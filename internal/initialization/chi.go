@@ -11,6 +11,7 @@ import (
 	"github.com/safakaveh/card-platform/internal/common/logger"
 	"github.com/safakaveh/card-platform/internal/domain/health"
 	"github.com/safakaveh/card-platform/internal/domain/shutdown"
+	uploadcsv "github.com/safakaveh/card-platform/internal/domain/upload-csv"
 	"github.com/safakaveh/card-platform/internal/middleware"
 	"github.com/safakaveh/card-platform/internal/web"
 )
@@ -41,6 +42,9 @@ func NewChiRoute(h *Handlers) *ChiRouter {
 	})
 	r.Route("/system", func(api chi.Router) {
 		api.Mount("/shutdown", shutdown.Routes(h.ShutdownHandler))
+	})
+	r.Route("/api/imports", func(api chi.Router) {
+		api.Mount("/", uploadcsv.Routes(h.UploadCSVHandler))
 	})
 
 	// r.Group(func(api chi.Router) {

@@ -1,27 +1,148 @@
 <script lang="ts">
-	import * as Card from "$lib/components/ui/card/index.js";
+	import * as Card from '$lib/components/ui/card/index.js';
+	import { Badge } from '$lib/components/ui/badge/index.js';
+	import { Separator } from '$lib/components/ui/separator/index.js';
 </script>
 
-<Card.Root class="mx-auto w-1/2">
- <Card.Header>
-  <Card.Title>به برنامه دستگاه XYZ خوش آمدید</Card.Title>
-  <Card.Description>پیاده سازی و طراحی شرکت تراشه هوشمند</Card.Description>
- </Card.Header>
- <Card.Content class="-mb-(--card-spacing)">
-  <p class="mb-2">در هنگام استفاده از برنامه به موارد زیر توجه فرمایید</p>
-  
-  <ol>
-    <li>فایل بارگذاری حتما CSV استاندارد با header باشد</li>
-    <li>در صورتی که فایل excle دارید کافی است آن را به فرمت .csv ذخیره کنید</li>
-    <li>در صورتی که header با حروف frn_ شروع شده باشد موارد آن ستون در روی کارت لیزر خواهند شد</li>
-    <li>در صورتی که header با حروف bck_ شروع شده باشد موارد آن ستون در پشت کارت لیزر خواهند شد</li>
-    <li>در صورتی که قصد لیزر UID کارت ها را دارید کافیست یک ستون خالی با  هدر frn_uid یا bck_uid داشته باشید </li>
-  </ol>
- </Card.Content>
- <Card.Footer class="mt-7 text-center justify-center">
-  <p>در آخر از توجه شما سپاسگزاریم و امیدواریم از استفاده از دستگاه ما رضایت کامل داشته باشید</p>
- </Card.Footer>
-</Card.Root>
+<svelte:head>
+	<title>راهنمای استفاده از دستگاه XYZ</title>
+</svelte:head>
 
+<div dir="rtl" class="flex min-h-full items-center justify-center px-4 py-8">
+	<Card.Root class="mx-auto w-full max-w-3xl overflow-hidden shadow-md">
+		<Card.Header class="space-y-3 bg-muted/30 text-right">
+			<div class="flex items-center gap-3">
+				<div
+					class="flex h-11 w-11 items-center justify-center rounded-xl bg-primary text-lg font-bold text-primary-foreground"
+				>
+					XYZ
+				</div>
 
+				<div>
+					<Card.Title class="text-xl font-bold sm:text-2xl">
+						به برنامه دستگاه XYZ خوش آمدید
+					</Card.Title>
 
+					<Card.Description class="mt-1 text-sm sm:text-base">
+						پیاده‌سازی و طراحی توسط شرکت تراشه هوشمند
+					</Card.Description>
+				</div>
+			</div>
+		</Card.Header>
+
+		<Card.Content class="space-y-6 pt-6 text-right">
+			<div class="rounded-lg border border-blue-200 bg-blue-50 p-4 text-blue-950 dark:border-blue-900 dark:bg-blue-950/30 dark:text-blue-100">
+				<p class="font-medium">
+					لطفاً پیش از استفاده از برنامه، نکات زیر را با دقت مطالعه فرمایید.
+				</p>
+			</div>
+
+			<ol class="space-y-4">
+				<li class="flex gap-3">
+					<span
+						class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground"
+					>
+						۱
+					</span>
+
+					<p class="leading-7">
+						فایل بارگذاری‌شده باید یک فایل
+						<Badge variant="secondary">CSV</Badge>
+						استاندارد و دارای سطر عنوان ستون‌ها
+						<code class="rounded bg-muted px-1.5 py-0.5 text-sm">header</code>
+						باشد.
+					</p>
+				</li>
+
+				<li class="flex gap-3">
+					<span
+						class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground"
+					>
+						۲
+					</span>
+
+					<p class="leading-7">
+						اگر فایل شما با فرمت Excel است، کافی است آن را با فرمت
+						<Badge variant="secondary">.csv</Badge>
+						ذخیره کنید.
+					</p>
+				</li>
+
+				<li class="flex gap-3">
+					<span
+						class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground"
+					>
+						۳
+					</span>
+
+					<p class="leading-7">
+						ستون‌هایی که عنوان آن‌ها با
+						<code class="rounded bg-emerald-100 px-1.5 py-0.5 text-sm text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200">
+							frn_
+						</code>
+						شروع می‌شود، روی قسمت جلوی کارت لیزر خواهند شد.
+					</p>
+				</li>
+
+				<li class="flex gap-3">
+					<span
+						class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground"
+					>
+						۴
+					</span>
+
+					<p class="leading-7">
+						ستون‌هایی که عنوان آن‌ها با
+						<code class="rounded bg-amber-100 px-1.5 py-0.5 text-sm text-amber-800 dark:bg-amber-950 dark:text-amber-200">
+							bck_
+						</code>
+						شروع می‌شود، روی قسمت پشت کارت لیزر خواهند شد.
+					</p>
+				</li>
+
+				<li class="flex gap-3">
+					<span
+						class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground"
+					>
+						۵
+					</span>
+
+					<p class="leading-7">
+						برای لیزر کردن UID کارت‌ها، کافی است یک ستون خالی با یکی از عنوان‌های زیر
+						در فایل CSV ایجاد کنید:
+					</p>
+				</li>
+			</ol>
+
+			<div class="grid gap-3 sm:grid-cols-2">
+				<div class="rounded-lg border bg-muted/40 p-3 text-center">
+					<code class="text-sm font-semibold">frn_uid</code>
+					<p class="mt-1 text-xs text-muted-foreground">
+						لیزر UID در قسمت جلوی کارت
+					</p>
+				</div>
+
+				<div class="rounded-lg border bg-muted/40 p-3 text-center">
+					<code class="text-sm font-semibold">bck_uid</code>
+					<p class="mt-1 text-xs text-muted-foreground">
+						لیزر UID در قسمت پشت کارت
+					</p>
+				</div>
+			</div>
+
+			<div class="rounded-lg border border-red-200 bg-red-50 p-4 text-sm leading-7 text-red-900 dark:border-red-900 dark:bg-red-950/30 dark:text-red-100">
+				<strong>نکته:</strong>
+				مطمئن شوید نام ستون‌ها دقیقاً مطابق الگوی اعلام‌شده باشد؛ حروف اضافه یا فاصله
+				ممکن است باعث شناسایی نشدن ستون شود.
+			</div>
+		</Card.Content>
+
+		<Separator />
+
+		<Card.Footer class="justify-center px-6 py-5 text-center">
+			<p class="text-sm leading-7 text-muted-foreground">
+				از توجه شما سپاسگزاریم و امیدواریم از استفاده از دستگاه ما رضایت کامل داشته باشید.
+			</p>
+		</Card.Footer>
+	</Card.Root>
+</div>

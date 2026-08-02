@@ -21,13 +21,6 @@ func NewDBServer() *DBServer {
 		log.Fatal(err)
 	}
 
-	defer func() {
-		if err := sqliteDB.Close(); err != nil {
-			log.Printf("failed to close database: %v", err)
-		} else {
-			log.Println("database connection closed")
-		}
-	}()
 	return &DBServer{
 		Database: sqliteDB,
 		Queries:  sqlc.New(sqliteDB),
