@@ -22,8 +22,8 @@ func Open(ctx context.Context, databasePath string) (*sql.DB, error) {
 		return nil, fmt.Errorf("resolve database path: %w", err)
 	}
 
-	if err := os.MkdirAll(filepath.Dir(absolutePath), 0o755); err != nil {
-		return nil, fmt.Errorf("create database directory: %w", err)
+	if err := ensureWritable(absolutePath); err != nil {
+		return nil, err
 	}
 
 	dsn := sqliteDSN(absolutePath)
@@ -33,7 +33,6 @@ func Open(ctx context.Context, databasePath string) (*sql.DB, error) {
 		return nil, fmt.Errorf("open sqlite database: %w", err)
 	}
 
-	// SQLite معمولاً با تعداد connection محدود پایدارتر است.
 	database.SetMaxOpenConns(4)
 	database.SetMaxIdleConns(4)
 	database.SetConnMaxLifetime(0)
@@ -41,7 +40,7 @@ func Open(ctx context.Context, databasePath string) (*sql.DB, error) {
 
 	if err := database.PingContext(ctx); err != nil {
 		_ = database.Close()
-		return nil, fmt.Errorf("ping sqlite database: %w", err)
+		return nil, fmt.Errorf("ping sqlite database path=%s dsn=%s: %w", absolutePath, dsn, err)
 	}
 
 	if err := Migrate(ctx, database); err != nil {
@@ -53,20 +52,35 @@ func Open(ctx context.Context, databasePath string) (*sql.DB, error) {
 }
 
 func sqliteDSN(databasePath string) string {
-	uri := &url.URL{
-		Scheme: "file",
-		Path:   filepath.ToSlash(databasePath),
-	}
+	p := filepath.ToSlash(databasePath)
 
-	query := uri.Query()
+	query := url.Values{}
+	query.Set("mode", "rwc")
 
-	// برای تمام connectionهای pool اعمال می‌شود.
 	query.Add("_pragma", "foreign_keys(1)")
 	query.Add("_pragma", "busy_timeout(5000)")
 	query.Add("_pragma", "journal_mode(WAL)")
 	query.Add("_pragma", "synchronous(NORMAL)")
 
-	uri.RawQuery = query.Encode()
+	return "file:" + p + "?" + query.Encode()
+}
 
-	return uri.String()
+func ensureWritable(databasePath string) error {
+	dir := filepath.Dir(databasePath)
+
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		return fmt.Errorf("create database directory %s: %w", dir, err)
+	}
+
+	testFile := filepath.Join(dir, ".write-test")
+
+	f, err := os.OpenFile(testFile, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0o600)
+	if err != nil {
+		return fmt.Errorf("database directory is not writable %s: %w", dir, err)
+	}
+
+	_ = f.Close()
+	_ = os.Remove(testFile)
+
+	return nil
 }

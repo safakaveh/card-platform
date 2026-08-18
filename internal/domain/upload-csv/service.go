@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"os"
 	"path/filepath"
 	"strings"
 	"time"
@@ -110,6 +111,16 @@ func (s *Service) Import(
 		return ImportResult{}, fmt.Errorf("prepare laser data insert: %w", err)
 	}
 	defer laserStatement.Close()
+	magnetStatement, err := transaction.PrepareContext(ctx, `INSERT INTO magnet_data (uuid, uuid_card, track_no, content, created_at) VALUES (?, ?, ?, ?, ?)`)
+	if err != nil {
+		return ImportResult{}, fmt.Errorf("prepare magnet data insert: %w", err)
+	}
+	defer magnetStatement.Close()
+	statusStatement, err := transaction.PrepareContext(ctx, `INSERT INTO card_status_history (uuid, uuid_card, status, created_at) VALUES (?, ?, ?, ?)`)
+	if err != nil {
+		return ImportResult{}, fmt.Errorf("prepare status insert: %w", err)
+	}
+	defer statusStatement.Close()
 
 	var rowsImported int64
 	for csvRowNumber := int64(2); ; csvRowNumber++ {
@@ -144,8 +155,32 @@ func (s *Service) Import(
 		); err != nil {
 			return ImportResult{}, fmt.Errorf("insert card at row %d: %w", csvRowNumber, err)
 		}
+		if _, err := statusStatement.ExecContext(ctx, uuid.NewString(), cardID, "loaded", now); err != nil {
+			return ImportResult{}, err
+		}
 
 		for _, mapping := range mappings {
+			value := []byte(record[mapping.index])
+			if mapping.isImage {
+				value, err = os.ReadFile(strings.TrimSpace(record[mapping.index]))
+				if err != nil {
+					return ImportResult{}, fmt.Errorf("read image %s at row %d: %w", mapping.header, csvRowNumber, err)
+				}
+			}
+			if mapping.trackNo > 0 {
+				if _, err := magnetStatement.ExecContext(ctx, uuid.NewString(), cardID, mapping.trackNo, value, now); err != nil {
+					return ImportResult{}, err
+				}
+				continue
+			}
+			if mapping.isUID {
+				if strings.EqualFold(strings.TrimSpace(record[mapping.index]), "1") || strings.EqualFold(strings.TrimSpace(record[mapping.index]), "true") {
+					if _, err := transaction.ExecContext(ctx, `INSERT INTO mifare_data (uuid, uuid_card, block_no, key_a, key_b, content, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)`, uuid.NewString(), cardID, -1, []byte{}, []byte{}, []byte("UUID_PENDING"), now); err != nil {
+						return ImportResult{}, err
+					}
+				}
+				continue
+			}
 			if _, err := laserStatement.ExecContext(
 				ctx,
 				uuid.NewString(),
@@ -153,7 +188,7 @@ func (s *Service) Import(
 				mapping.side,
 				mapping.rowNumber,
 				mapping.contentType,
-				[]byte(record[mapping.index]),
+				value,
 				now,
 			); err != nil {
 				return ImportResult{}, fmt.Errorf(
@@ -322,6 +357,9 @@ func mapHeaders(
 			contentType = strings.TrimSpace(header[len("bck_"):])
 			backRow++
 			rowNumber = backRow
+		case strings.HasPrefix(normalized, "trk1_") || strings.HasPrefix(normalized, "trk2_") || strings.HasPrefix(normalized, "trk3_"):
+			contentType = normalized
+			rowNumber = 0
 		default:
 			continue
 		}
@@ -343,6 +381,17 @@ func mapHeaders(
 		seen[normalized] = struct{}{}
 
 		isUID := strings.EqualFold(contentType, "uid")
+		isImage := strings.HasPrefix(normalized, "frn_img_") || strings.HasPrefix(normalized, "bck_img_")
+		trackNo := 0
+		for _, prefix := range []struct {
+			p string
+			n int
+		}{{"trk1_", 1}, {"trk2_", 2}, {"trk3_", 3}} {
+			if strings.HasPrefix(normalized, prefix.p) {
+				trackNo = prefix.n
+				break
+			}
+		}
 		if isUID {
 			contentType = "uid"
 			hasUID = true
@@ -355,6 +404,8 @@ func mapHeaders(
 			contentType: contentType,
 			header:      header,
 			isUID:       isUID,
+			isImage:     isImage,
+			trackNo:     trackNo,
 		})
 		if side == "front" {
 			frontColumns = append(frontColumns, header)

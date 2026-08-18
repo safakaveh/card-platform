@@ -33,4 +33,6 @@ type columnMapping struct {
 	contentType string
 	header      string
 	isUID       bool
+	isImage     bool
+	trackNo     int
 }
