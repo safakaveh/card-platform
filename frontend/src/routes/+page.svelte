@@ -1,7 +1,35 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import * as Card from '$lib/components/ui/card/index.js';
 	import { Badge } from '$lib/components/ui/badge/index.js';
 	import { Separator } from '$lib/components/ui/separator/index.js';
+
+	type ImportSummary = { card_count?: number; status?: string };
+	let ordersCount = $state<number | null>(null);
+	let cardsCount = $state<number | null>(null);
+	let pendingCount = $state<number | null>(null);
+
+	async function loadDashboard() {
+		try {
+			const [importsResponse, pendingResponse] = await Promise.all([
+				fetch('/api/imports/?limit=100', { headers: { Accept: 'application/json' } }),
+				fetch('/api/data/pending?limit=1000', { headers: { Accept: 'application/json' } })
+			]);
+			if (importsResponse.ok) {
+				const imports = (await importsResponse.json()) as ImportSummary[];
+				ordersCount = imports.length;
+				cardsCount = imports.reduce((total, item) => total + (item.card_count || 0), 0);
+			}
+			if (pendingResponse.ok) {
+				const pending = (await pendingResponse.json()) as { count?: number };
+				pendingCount = pending.count || 0;
+			}
+		} catch {
+			// The guide remains useful when the API is temporarily unavailable.
+		}
+	}
+
+	onMount(loadDashboard);
 </script>
 
 <svelte:head>
@@ -10,6 +38,20 @@
 
 <div dir="rtl" class="flex min-h-full items-center justify-center px-4 py-8">
 	<Card.Root class="mx-auto w-full max-w-3xl overflow-hidden shadow-md">
+		<div class="grid gap-3 border-b bg-slate-50/70 p-4 sm:grid-cols-3">
+			{#each [
+				{ label: 'تعداد سفارش‌ها', value: ordersCount },
+				{ label: 'مجموع کارت‌ها', value: cardsCount },
+				{ label: 'UIDهای در انتظار', value: pendingCount }
+			] as metric}
+				<div class="rounded-xl border bg-white p-3 text-center shadow-sm">
+					<p class="text-xs font-bold text-muted-foreground">{metric.label}</p>
+					<p class="mt-1 text-2xl font-black text-primary">
+						{metric.value === null ? '—' : metric.value.toLocaleString('fa-IR')}
+					</p>
+				</div>
+			{/each}
+		</div>
 		<Card.Header class="space-y-3 bg-muted/30 text-right">
 			<div class="flex items-center gap-3">
 				<div

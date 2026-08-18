@@ -4,6 +4,9 @@ import (
 	"context"
 	"database/sql"
 	"log"
+	"os"
+	"path/filepath"
+	"runtime"
 
 	"github.com/safakaveh/card-platform/internal/config"
 	"github.com/safakaveh/card-platform/internal/db"
@@ -16,7 +19,16 @@ type DBServer struct {
 }
 
 func NewDBServer() *DBServer {
-	sqliteDB, err := db.Open(context.Background(), config.GetEnvConf().DbDatasourceName)
+	datasource := config.GetEnvConf().DbDatasourceName
+	if runtime.GOOS == "windows" && !filepath.IsAbs(datasource) {
+		// A GUI-launched Windows executable does not always inherit the
+		// executable directory as its working directory.
+		if executable, err := os.Executable(); err == nil {
+			datasource = filepath.Join(filepath.Dir(executable), datasource)
+		}
+	}
+
+	sqliteDB, err := db.Open(context.Background(), datasource)
 	if err != nil {
 		log.Fatal(err)
 	}

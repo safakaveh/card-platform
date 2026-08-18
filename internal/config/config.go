@@ -21,7 +21,7 @@ func load() *EnvConf {
 
 	cfg.LogLevel = getEnv("LOG_LEVEL", "info")
 
-	cfg.DbDriver = getEnv("DB_DRIVER", "postgres")
+	cfg.DbDriver = getEnv("DB_DRIVER", "sqlite")
 
 	cfg.DbDatasourceName = getEnv("DB_DATASOURCE_NAME", "./data.db")
 

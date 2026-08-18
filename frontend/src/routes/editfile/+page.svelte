@@ -317,7 +317,7 @@
 						برای شروع، یک فایل CSV شامل اطلاعات کارت‌ها بارگذاری کنید تا در این بخش نمایش داده شود.
 					</p>
 					<a
-						href="#"
+						href="/upload"
 						class="mt-5 rounded-2xl bg-slate-900 px-5 py-3 text-sm font-bold text-white transition hover:bg-sky-700 focus:ring-2 focus:ring-sky-300 focus:outline-none"
 					>
 						بارگذاری اولین فایل

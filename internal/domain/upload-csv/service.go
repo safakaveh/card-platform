@@ -54,6 +54,7 @@ func (s *Service) Import(
 	if err != nil {
 		return ImportResult{}, err
 	}
+	csvReader.FieldsPerRecord = len(headers)
 
 	transaction, err := s.database.BeginTx(ctx, nil)
 	if err != nil {
@@ -121,6 +122,11 @@ func (s *Service) Import(
 		return ImportResult{}, fmt.Errorf("prepare status insert: %w", err)
 	}
 	defer statusStatement.Close()
+	mifareStatement, err := transaction.PrepareContext(ctx, `INSERT INTO mifare_data (uuid, uuid_card, block_no, key_a, key_b, content, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)`)
+	if err != nil {
+		return ImportResult{}, fmt.Errorf("prepare mifare data insert: %w", err)
+	}
+	defer mifareStatement.Close()
 
 	var rowsImported int64
 	for csvRowNumber := int64(2); ; csvRowNumber++ {
@@ -160,9 +166,16 @@ func (s *Service) Import(
 		}
 
 		for _, mapping := range mappings {
+			if mapping.index >= len(record) {
+				return ImportResult{}, fmt.Errorf("%w: row %d has fewer fields than header", ErrInvalidCSV, csvRowNumber)
+			}
 			value := []byte(record[mapping.index])
 			if mapping.isImage {
-				value, err = os.ReadFile(strings.TrimSpace(record[mapping.index]))
+				imagePath := strings.TrimSpace(record[mapping.index])
+				if imagePath == "" {
+					return ImportResult{}, fmt.Errorf("%w: empty image path in %s at row %d", ErrInvalidCSV, mapping.header, csvRowNumber)
+				}
+				value, err = os.ReadFile(imagePath)
 				if err != nil {
 					return ImportResult{}, fmt.Errorf("read image %s at row %d: %w", mapping.header, csvRowNumber, err)
 				}
@@ -175,7 +188,7 @@ func (s *Service) Import(
 			}
 			if mapping.isUID {
 				if strings.EqualFold(strings.TrimSpace(record[mapping.index]), "1") || strings.EqualFold(strings.TrimSpace(record[mapping.index]), "true") {
-					if _, err := transaction.ExecContext(ctx, `INSERT INTO mifare_data (uuid, uuid_card, block_no, key_a, key_b, content, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)`, uuid.NewString(), cardID, -1, []byte{}, []byte{}, []byte("UUID_PENDING"), now); err != nil {
+					if _, err := mifareStatement.ExecContext(ctx, uuid.NewString(), cardID, mapping.uidBlock, []byte{}, []byte{}, []byte("UUID_PENDING"), now); err != nil {
 						return ImportResult{}, err
 					}
 				}
@@ -287,10 +300,11 @@ func (s *Service) Get(ctx context.Context, importID string) (ImportDetails, erro
 			o.created_at,
 			COUNT(DISTINCT CASE WHEN l.side = 'front' THEN l.row_no END),
 			COUNT(DISTINCT CASE WHEN l.side = 'back' THEN l.row_no END),
-			COUNT(CASE WHEN l.content_type = 'uid' THEN 1 END)
+			COUNT(DISTINCT CASE WHEN m.block_no IN (-1, -2) THEN m.uuid END)
 		FROM orders o
 		LEFT JOIN cards c ON c.uuid_order = o.uuid
 		LEFT JOIN laser_data l ON l.uuid_card = c.uuid
+		LEFT JOIN mifare_data m ON m.uuid_card = c.uuid
 		WHERE o.uuid = ?
 		GROUP BY o.uuid
 	`, importID).Scan(
@@ -395,6 +409,22 @@ func mapHeaders(
 		if isUID {
 			contentType = "uid"
 			hasUID = true
+			if side == "front" {
+				frontRow--
+			} else if side == "back" {
+				backRow--
+			}
+			rowNumber = 0
+		} else if isImage {
+			contentType = "image"
+		}
+		uidBlock := 0
+		if isUID {
+			if side == "front" {
+				uidBlock = -1
+			} else {
+				uidBlock = -2
+			}
 		}
 
 		mappings = append(mappings, columnMapping{
@@ -406,10 +436,11 @@ func mapHeaders(
 			isUID:       isUID,
 			isImage:     isImage,
 			trackNo:     trackNo,
+			uidBlock:    uidBlock,
 		})
 		if side == "front" {
 			frontColumns = append(frontColumns, header)
-		} else {
+		} else if side == "back" {
 			backColumns = append(backColumns, header)
 		}
 	}

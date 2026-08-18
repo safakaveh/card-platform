@@ -35,4 +35,5 @@ type columnMapping struct {
 	isUID       bool
 	isImage     bool
 	trackNo     int
+	uidBlock    int
 }

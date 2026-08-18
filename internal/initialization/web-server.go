@@ -43,6 +43,15 @@ func (s Server) Start() {
 	}
 	url := "http://" + s.Addr
 
+	// Bind synchronously so a second launch is detected deterministically.
+	listener, err := net.Listen("tcp", s.Addr)
+	if err != nil {
+		if notifyDuplicateInstance(url) {
+			_ = s.openBrowser(url)
+		}
+		return
+	}
+
 	serverErr := make(chan error, 1)
 	signalCtx, stopSignals := signal.NotifyContext(
 		context.Background(),
@@ -52,12 +61,6 @@ func (s Server) Start() {
 	defer stopSignals()
 
 	go func() {
-		if err := s.waitForServer(s.Addr, 10*time.Second); err != nil {
-			log.Printf("server not ready: %v", err)
-			log.Printf("open manually: %s", url)
-			return
-		}
-
 		if err := s.openBrowser(url); err != nil {
 			log.Printf("failed to open browser automatically: %v", err)
 			log.Printf("open manually: %s", url)
@@ -67,7 +70,7 @@ func (s Server) Start() {
 
 		log.Printf("server listening on %s", url)
 
-		err := server.ListenAndServe()
+		err := server.Serve(listener)
 		if err != nil && !errors.Is(err, http.ErrServerClosed) {
 			serverErr <- err
 			return
@@ -107,20 +110,6 @@ func (s Server) Start() {
 
 	log.Println("application stopped")
 
-}
-
-func (s Server) waitForServer(addr string, timeout time.Duration) error {
-	deadline := time.Now().Add(timeout)
-
-	for time.Now().Before(deadline) {
-		conn, err := net.DialTimeout("tcp", addr, 300*time.Millisecond)
-		if err == nil {
-			_ = conn.Close()
-			return nil
-		}
-		time.Sleep(150 * time.Millisecond)
-	}
-	return fmt.Errorf("timeout waiting for %s", addr)
 }
 
 func (s Server) openBrowser(url string) error {

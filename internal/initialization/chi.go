@@ -9,6 +9,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
 	"github.com/safakaveh/card-platform/internal/common/logger"
+	getdata "github.com/safakaveh/card-platform/internal/domain/get-data"
 	"github.com/safakaveh/card-platform/internal/domain/health"
 	"github.com/safakaveh/card-platform/internal/domain/shutdown"
 	uploadcsv "github.com/safakaveh/card-platform/internal/domain/upload-csv"
@@ -45,6 +46,9 @@ func NewChiRoute(h *Handlers) *ChiRouter {
 	})
 	r.Route("/api/imports", func(api chi.Router) {
 		api.Mount("/", uploadcsv.Routes(h.UploadCSVHandler))
+	})
+	r.Route("/api/data", func(api chi.Router) {
+		api.Mount("/", getdata.Routes(h.GetDataHandler))
 	})
 
 	// r.Group(func(api chi.Router) {
