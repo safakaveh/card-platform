@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS cards (
     has_press INTEGER NOT NULL DEFAULT 0 CHECK (has_press IN (0, 1)),
     has_temperature INTEGER NOT NULL DEFAULT 0 CHECK (has_temperature IN (0, 1)),
     is_done INTEGER NOT NULL DEFAULT 0 CHECK (is_done IN (0, 1)),
+    read_at INTEGER,
     description TEXT,
     created_at INTEGER NOT NULL,
     updated_at INTEGER NOT NULL,
@@ -34,6 +35,9 @@ CREATE TABLE IF NOT EXISTS cards (
 
 CREATE INDEX IF NOT EXISTS idx_cards_uuid_order
     ON cards(uuid_order);
+
+CREATE INDEX IF NOT EXISTS idx_cards_uuid_order_read_at
+    ON cards(uuid_order, read_at, created_at);
 
 CREATE TABLE IF NOT EXISTS card_status_history (
     uuid TEXT PRIMARY KEY NOT NULL,

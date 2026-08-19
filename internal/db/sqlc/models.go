@@ -19,6 +19,7 @@ type Card struct {
 	HasPress       int64          `json:"has_press"`
 	HasTemperature int64          `json:"has_temperature"`
 	IsDone         int64          `json:"is_done"`
+	ReadAt         sql.NullInt64  `json:"read_at"`
 	Description    sql.NullString `json:"description"`
 	CreatedAt      int64          `json:"created_at"`
 	UpdatedAt      int64          `json:"updated_at"`

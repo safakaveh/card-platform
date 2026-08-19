@@ -120,9 +120,25 @@ WHERE uuid = ?
 LIMIT 1
 `
 
-func (q *Queries) GetCardByUUID(ctx context.Context, uuid string) (Card, error) {
+type GetCardByUUIDRow struct {
+	Uuid           string         `json:"uuid"`
+	UuidOrder      string         `json:"uuid_order"`
+	HasLaser       int64          `json:"has_laser"`
+	HasMagnet      int64          `json:"has_magnet"`
+	HasMifareUid   int64          `json:"has_mifare_uid"`
+	HasMifare      int64          `json:"has_mifare"`
+	HasJavaCard    int64          `json:"has_java_card"`
+	HasPress       int64          `json:"has_press"`
+	HasTemperature int64          `json:"has_temperature"`
+	IsDone         int64          `json:"is_done"`
+	Description    sql.NullString `json:"description"`
+	CreatedAt      int64          `json:"created_at"`
+	UpdatedAt      int64          `json:"updated_at"`
+}
+
+func (q *Queries) GetCardByUUID(ctx context.Context, uuid string) (GetCardByUUIDRow, error) {
 	row := q.db.QueryRowContext(ctx, getCardByUUID, uuid)
-	var i Card
+	var i GetCardByUUIDRow
 	err := row.Scan(
 		&i.Uuid,
 		&i.UuidOrder,
@@ -161,15 +177,31 @@ WHERE uuid_order = ?
 ORDER BY created_at DESC
 `
 
-func (q *Queries) ListCardsByOrderUUID(ctx context.Context, uuidOrder string) ([]Card, error) {
+type ListCardsByOrderUUIDRow struct {
+	Uuid           string         `json:"uuid"`
+	UuidOrder      string         `json:"uuid_order"`
+	HasLaser       int64          `json:"has_laser"`
+	HasMagnet      int64          `json:"has_magnet"`
+	HasMifareUid   int64          `json:"has_mifare_uid"`
+	HasMifare      int64          `json:"has_mifare"`
+	HasJavaCard    int64          `json:"has_java_card"`
+	HasPress       int64          `json:"has_press"`
+	HasTemperature int64          `json:"has_temperature"`
+	IsDone         int64          `json:"is_done"`
+	Description    sql.NullString `json:"description"`
+	CreatedAt      int64          `json:"created_at"`
+	UpdatedAt      int64          `json:"updated_at"`
+}
+
+func (q *Queries) ListCardsByOrderUUID(ctx context.Context, uuidOrder string) ([]ListCardsByOrderUUIDRow, error) {
 	rows, err := q.db.QueryContext(ctx, listCardsByOrderUUID, uuidOrder)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []Card{}
+	items := []ListCardsByOrderUUIDRow{}
 	for rows.Next() {
-		var i Card
+		var i ListCardsByOrderUUIDRow
 		if err := rows.Scan(
 			&i.Uuid,
 			&i.UuidOrder,
@@ -219,15 +251,31 @@ WHERE uuid_order = ?
 ORDER BY created_at DESC
 `
 
-func (q *Queries) ListDoneCardsByOrderUUID(ctx context.Context, uuidOrder string) ([]Card, error) {
+type ListDoneCardsByOrderUUIDRow struct {
+	Uuid           string         `json:"uuid"`
+	UuidOrder      string         `json:"uuid_order"`
+	HasLaser       int64          `json:"has_laser"`
+	HasMagnet      int64          `json:"has_magnet"`
+	HasMifareUid   int64          `json:"has_mifare_uid"`
+	HasMifare      int64          `json:"has_mifare"`
+	HasJavaCard    int64          `json:"has_java_card"`
+	HasPress       int64          `json:"has_press"`
+	HasTemperature int64          `json:"has_temperature"`
+	IsDone         int64          `json:"is_done"`
+	Description    sql.NullString `json:"description"`
+	CreatedAt      int64          `json:"created_at"`
+	UpdatedAt      int64          `json:"updated_at"`
+}
+
+func (q *Queries) ListDoneCardsByOrderUUID(ctx context.Context, uuidOrder string) ([]ListDoneCardsByOrderUUIDRow, error) {
 	rows, err := q.db.QueryContext(ctx, listDoneCardsByOrderUUID, uuidOrder)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []Card{}
+	items := []ListDoneCardsByOrderUUIDRow{}
 	for rows.Next() {
-		var i Card
+		var i ListDoneCardsByOrderUUIDRow
 		if err := rows.Scan(
 			&i.Uuid,
 			&i.UuidOrder,
@@ -277,15 +325,31 @@ WHERE uuid_order = ?
 ORDER BY created_at DESC
 `
 
-func (q *Queries) ListPendingCardsByOrderUUID(ctx context.Context, uuidOrder string) ([]Card, error) {
+type ListPendingCardsByOrderUUIDRow struct {
+	Uuid           string         `json:"uuid"`
+	UuidOrder      string         `json:"uuid_order"`
+	HasLaser       int64          `json:"has_laser"`
+	HasMagnet      int64          `json:"has_magnet"`
+	HasMifareUid   int64          `json:"has_mifare_uid"`
+	HasMifare      int64          `json:"has_mifare"`
+	HasJavaCard    int64          `json:"has_java_card"`
+	HasPress       int64          `json:"has_press"`
+	HasTemperature int64          `json:"has_temperature"`
+	IsDone         int64          `json:"is_done"`
+	Description    sql.NullString `json:"description"`
+	CreatedAt      int64          `json:"created_at"`
+	UpdatedAt      int64          `json:"updated_at"`
+}
+
+func (q *Queries) ListPendingCardsByOrderUUID(ctx context.Context, uuidOrder string) ([]ListPendingCardsByOrderUUIDRow, error) {
 	rows, err := q.db.QueryContext(ctx, listPendingCardsByOrderUUID, uuidOrder)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []Card{}
+	items := []ListPendingCardsByOrderUUIDRow{}
 	for rows.Next() {
-		var i Card
+		var i ListPendingCardsByOrderUUIDRow
 		if err := rows.Scan(
 			&i.Uuid,
 			&i.UuidOrder,

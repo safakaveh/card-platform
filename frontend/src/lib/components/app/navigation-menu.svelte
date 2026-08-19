@@ -82,13 +82,8 @@
     <ul class="grid w-[250px] gap-4 p-2">
      <li>
        <NavigationMenu.Link href="/reports" class="flex-row items-center gap-2">
-       <UploadIcon />
-       بر اساس فایل ها
-      </NavigationMenu.Link>
- 
-       <NavigationMenu.Link href="/reports" class="flex-row items-center gap-2">
        <ClipboardPenIcon />
-       بر اساس فعالیت ها
+       خواندن و گزارش ردیف‌ها
       </NavigationMenu.Link>
  
      </li>

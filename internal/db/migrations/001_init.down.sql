@@ -4,6 +4,7 @@ DROP TRIGGER IF EXISTS trg_orders_updated_at;
 DROP INDEX IF EXISTS idx_mifare_data_uuid_card;
 DROP INDEX IF EXISTS idx_magnet_data_uuid_card;
 DROP INDEX IF EXISTS idx_laser_data_uuid_card;
+DROP INDEX IF EXISTS idx_cards_uuid_order_read_at;
 DROP INDEX IF EXISTS idx_card_status_history_uuid_card;
 DROP INDEX IF EXISTS idx_cards_uuid_order;
 
