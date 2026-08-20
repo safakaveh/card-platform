@@ -10,10 +10,10 @@ front:
 	cp -a frontend/build/. internal/web/build/
 
 build: gen front
-	go build -o bin/myapp ./cmd/app
+	go build -o bin/laser ./cmd/app
 
 run: build
-	./bin/myapp
+	./bin/laser
 
 # Windows GUI subsystem prevents a console window from appearing when the
 # packaged application is launched by the user.

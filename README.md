@@ -154,8 +154,8 @@ go run ./cmd/app
 |---|---|
 | `make gen` | اجرای `sqlc generate` و تولید فایل‌های `internal/db/sqlc` از migration/queryها |
 | `make front` | اجرای `npm install`، سپس `npm run build` و کپی خروجی به `internal/web/build` |
-| `make build` | اجرای `gen` و `front` و ساخت `bin/myapp` |
-| `make run` | build کامل و اجرای `./bin/myapp` |
+| `make build` | اجرای `gen` و `front` و ساخت `bin/laser` |
+| `make run` | build کامل و اجرای `./bin/laser` |
 | `make build-windows` | build برای `windows/amd64` با `-H=windowsgui` در `bin/card-platform.exe` |
 
 نمونه:

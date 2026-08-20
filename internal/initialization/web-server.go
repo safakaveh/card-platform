@@ -46,8 +46,12 @@ func (s Server) Start() {
 	// Bind synchronously so a second launch is detected deterministically.
 	listener, err := net.Listen("tcp", s.Addr)
 	if err != nil {
+		log.Printf("cannot start application on %s: %v", s.Addr, err)
 		if notifyDuplicateInstance(url) {
-			_ = s.openBrowser(url)
+			if browserErr := s.openBrowser(url); browserErr != nil {
+				log.Printf("failed to open the running application: %v", browserErr)
+				log.Printf("open manually: %s", url)
+			}
 		}
 		return
 	}
@@ -113,12 +117,35 @@ func (s Server) Start() {
 }
 
 func (s Server) openBrowser(url string) error {
-	switch runtime.GOOS {
+	command, args, err := browserCommand(runtime.GOOS, url)
+	if err != nil {
+		return err
+	}
+	return exec.Command(command, args...).Start()
+}
+
+// browserCommand returns a platform-native command without assuming that the
+// executable is installed. The fallback commands make Linux distributions
+// using gio/sensible-browser work even when xdg-open is unavailable.
+func browserCommand(goos, url string) (string, []string, error) {
+	switch goos {
 	case "windows":
-		return exec.Command("rundll32", "url.dll", "FileProtocolHandler", url).Start()
+		return "rundll32", []string{"url.dll", "FileProtocolHandler", url}, nil
 	case "darwin":
-		return exec.Command("open", url).Start()
+		return "open", []string{url}, nil
 	default:
-		return exec.Command("xdg-open", url).Start()
+		for _, candidate := range []struct {
+			name string
+			args []string
+		}{
+			{"xdg-open", []string{url}},
+			{"gio", []string{"open", url}},
+			{"sensible-browser", []string{url}},
+		} {
+			if _, err := exec.LookPath(candidate.name); err == nil {
+				return candidate.name, candidate.args, nil
+			}
+		}
+		return "", nil, fmt.Errorf("no supported browser opener found (tried xdg-open, gio, sensible-browser)")
 	}
 }
